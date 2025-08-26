@@ -2,6 +2,8 @@ import React from 'react';
 import { getAllCompanions } from '../../lib/actions/companion.action';
 import CompanionCard from '../../components/companion-card';
 import { getSubjectColor } from '../../lib/utils';
+import SearchInput from '../../components/search-input';
+import SubjectFilter from '../../components/subject-filter';
 export default async function CompanionsLibrary({searchParams}:SearchParams) {
   const filters =await searchParams;
   const subject = filters.subject ? filters.subject:'';
