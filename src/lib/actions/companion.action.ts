@@ -1,4 +1,5 @@
 'use server';
+
 import {auth} from "@clerk/nextjs/server";
 import {createSupabaseClient} from "@/lib/supabase";
 import { revalidatePath } from "next/cache";
@@ -6,8 +7,9 @@ import { revalidatePath } from "next/cache";
 export const createCompanion = async (formData: CreateCompanion) => {
     const { userId: author } = await auth();
     const supabase = createSupabaseClient();
+
     const { data, error } = await supabase
-        .from('companions')
+        .from('Companions')
         .insert({...formData, author })
         .select();
 
@@ -19,7 +21,7 @@ export const createCompanion = async (formData: CreateCompanion) => {
 export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }: GetAllCompanions) => {
     const supabase = createSupabaseClient();
 
-    let query = supabase.from('companions').select();
+    let query = supabase.from('Companions').select();
 
     if(subject && topic) {
         query = query.ilike('subject', `%${subject}%`)
@@ -32,18 +34,18 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
 
     query = query.range((page - 1) * limit, page * limit - 1);
 
-    const { data: companions, error } = await query;
+    const { data: Companions, error } = await query;
 
     if(error) throw new Error(error.message);
 
-    return companions;
+    return Companions;
 }
 
 export const getCompanion = async (id: string) => {
     const supabase = createSupabaseClient();
 
     const { data, error } = await supabase
-        .from('companions')
+        .from('Companions')
         .select()
         .eq('id', id);
 
@@ -70,33 +72,33 @@ export const getRecentSessions = async (limit = 10) => {
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('session_history')
-        .select(`companions:companion_id (*)`)
+        .select(`Companions:companion_id (*)`)
         .order('created_at', { ascending: false })
         .limit(limit)
 
     if(error) throw new Error(error.message);
 
-    return data.map(({ companions }) => companions);
+    return data.map(({ Companions }) => Companions);
 }
 
 export const getUserSessions = async (userId: string, limit = 10) => {
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('session_history')
-        .select(`companions:companion_id (*)`)
+        .select(`Companions:companion_id (*)`)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(limit)
 
     if(error) throw new Error(error.message);
 
-    return data.map(({ companions }) => companions);
+    return data.map(({ Companions }) => Companions);
 }
 
 export const getUserCompanions = async (userId: string) => {
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
-        .from('companions')
+        .from('Companions')
         .select()
         .eq('author', userId)
 
@@ -120,7 +122,7 @@ export const newCompanionPermissions = async () => {
     }
 
     const { data, error } = await supabase
-        .from('companions')
+        .from('Companions')
         .select('id', { count: 'exact' })
         .eq('author', userId)
 
@@ -174,11 +176,11 @@ export const getBookmarkedCompanions = async (userId: string) => {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("bookmarks")
-    .select(`companions:companion_id (*)`) // Notice the (*) to get all the companion data
+    .select(`Companions:companion_id (*)`) // Notice the (*) to get all the companion data
     .eq("user_id", userId);
   if (error) {
     throw new Error(error.message);
   }
   // We don't need the bookmarks data, so we return only the companions
-  return data.map(({ companions }) => companions);
+  return data.map(({ Companions }) => Companions);
 };

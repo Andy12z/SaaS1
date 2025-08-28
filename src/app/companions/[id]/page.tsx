@@ -6,14 +6,14 @@ import Image from "next/image";
 import CompanionComponent from "../../../components/CompanionComponent";
 
 type CompanionSesssionPageProps = {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 };
 export default async function CompanionSession({params}:CompanionSesssionPageProps) {
-  const {id} = await params;
+  const {id} =  params;
   const companion =await getCompanion(id);
   const user = await currentUser();
 
-  const {name,subject,title,topic,duration} = companion;
+  // const {name,subject,title,topic,duration} = companion;
   if(!user) redirect('/sign-in');
   if(!companion) redirect('/companions');
   return (
